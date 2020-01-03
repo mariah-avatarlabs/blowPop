@@ -59,7 +59,7 @@ Patches.setPoint2DValue('lanternOffset',
 
 
 let resetTimeDriver = () => {
-    let driverDuration = Math.floor(Math.random() * 25) + 10;
+    let driverDuration = Math.floor(Math.random() * 40) + 20;
     let timeDriver = Animation.timeDriver({
         durationMilliseconds: driverDuration * 100,
         loopCount: 1,
@@ -211,38 +211,8 @@ FaceTracking.face(0).mouth.center.y.monitor().subscribe(function(e) {
     trackerRect.transform.x = mouthScaledX;
     trackerRect.transform.y = mouthScaledY;
     
-
-    // Convert the normalized screen space value for x and y by multiplying by the
-    // width and height of the canvas
-    // const scaledX = face2DBoundsCenter.x.mul(canvasBoundsWidth);
-    // const scaledY = face2DBoundsCenter.y.mul(canvasBoundsHeight);
     
-    // const testRect = Scene.root.find("tester");
-    // const trackerRect = Scene.root.find("tracker");
-    
-    // testRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
-    // testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
-
-    // mouthCoord.y = canvasBoundsWidth.mul(e.newValue)
 })
-
-// FaceTracking.face(0).cameraTransform.position.y.monitor().subscribe(() => {
-//     Diagnostics.log(canvasBoundsHeight.mul(e.newValue).lastValue);
-
-//   })
-//     // Diagnostics.log(canvasBoundsWidth.mul(e.newValue).lastValue);
-
-//     // const canvasBoundsWidth = canvasBounds.height;
-
-//     // if( 
-//     //     mouthOpenness.pinLastValue() > 0.5 
-//     // ){
-//     //     Diagnostics.log(e.newValue);
-//     //     Diagnostics.log(FaceTracking.face(0).mouth.center.y.lastValue);
-//     //     Diagnostics.log("HIT");    
-
-//     // }
-// })
 
 
 
