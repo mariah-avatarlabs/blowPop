@@ -32,7 +32,6 @@ const canvasBounds = canvas.bounds;
 const canvasBoundsWidth = canvasBounds.width;
 const canvasBoundsHeight = canvasBounds.height;
 
-
 const face2D = FaceTracking2D.face(0);
 const face2DBounds = face2D.boundingBox;
 const face2DBoundsCenter = face2DBounds.center;
@@ -56,8 +55,6 @@ Patches.setPoint2DValue('lanternOffset',
 );
 
 
-const fishLane0 = Scene.root.find("fish_lane_0");
-const demoFish = Scene.root.find("fish_lane_0");
 
 
 
@@ -73,21 +70,49 @@ let resetTimeDriver = () => {
 
 };
 
+class Score {
+    constructor(){
+        this.score = '00';
+    }
+
+    scored(hasBonus = false) {
+        let newScore = parseInt(this.score);
+        
+        if(hasBonus){
+            newScore += 10;
+        } else {
+            newScore += 50;
+        }
+
+        this.score = newScore.toString();
+        this.updateScoreBoard();
+    }
+
+    updateScoreBoard(){
+        Patches.setStringValue('scoreText', Reactive.val(this.score));
+    }
+
+}
+
 class Lane {
-    constructor(sceneObj, key) {
+    constructor(sceneObj, key, scoreboard) {
         this.key = key;
-      this.root = sceneObj;
-      this.fish = this.root.child('fishMesh');
-      this.animationObj = null;
-      
-      this.isActive = false;
-      this.timeDriver = null;
-      this.score = 0;
+        this.scoreboard = scoreboard;
+        this.root = sceneObj;
+        this.fish = this.root.child('fishMesh');
+        this.animationObj = null;
+        
+        this.isActive = false;
+        this.timeDriver = null;
+        this.score = 0;
     }
 
     hit(){
-        this.score++;
-        this.deactivate();
+        if(this.isActive){
+            this.score++;
+            this.deactivate();
+            this.scoreboard.scored();
+        }
     }
 
     deactivate(){
@@ -129,17 +154,19 @@ class Lane {
   }
 
 
+let gloablScoreboard = new Score();
 
 // const fishLane0 = Scene.root.find("fish_lane_0");
-let lane0 = new Lane(fishLane0, 'lane0')
+const fishLane0 = Scene.root.find("fish_lane_0");
+let lane0 = new Lane(fishLane0, 'lane0', gloablScoreboard)
 lane0.startAnim()
 
 const fishLane1 = Scene.root.find("fish_lane_1");
-let lane1 = new Lane(fishLane1, 'lane1')
+let lane1 = new Lane(fishLane1, 'lane1', gloablScoreboard)
 lane1.startAnim()
 
 const fishLane2 = Scene.root.find("fish_lane_2");
-let lane2 = new Lane(fishLane2, 'lane2')
+let lane2 = new Lane(fishLane2, 'lane2', gloablScoreboard)
 lane2.startAnim()
 
 let mouthOffset = 0.5;
