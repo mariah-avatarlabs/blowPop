@@ -50,8 +50,8 @@ testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
 
 Patches.setPoint2DValue('lanternOffset', 
     Reactive.point2d(
-        testRect.transform.x,
-        testRect.transform.y.mul(-1)
+        scaledX.sub(canvasBoundsWidth.div(2)),
+        scaledY.sub(canvasBoundsHeight.div(2))
     )
 );
 
