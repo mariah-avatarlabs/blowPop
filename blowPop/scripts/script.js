@@ -55,13 +55,8 @@ Patches.setPoint2DValue('lanternOffset',
     )
 );
 
-// Diagnostics.log(Patches.getPoint2DValue('lanternOffset'))
 
 const fishLane0 = Scene.root.find("fish_lane_0");
-
-// trackerRect.transform.x = scaledXB.sub(canvasBoundsWidth.div(2));
-
-
 const demoFish = Scene.root.find("fish_lane_0");
 
 
@@ -79,13 +74,31 @@ let resetTimeDriver = () => {
 };
 
 class Lane {
-    constructor(sceneObj) {
+    constructor(sceneObj, key) {
+        this.key = key;
       this.root = sceneObj;
       this.fish = this.root.child('fishMesh');
       this.animationObj = null;
       
       this.isActive = false;
       this.timeDriver = null;
+      this.score = 0;
+    }
+
+    hit(){
+        this.score++;
+        this.deactivate();
+    }
+
+    deactivate(){
+        Diagnostics.log('deactivate' + this.key)
+        this.isActive = false;
+        Patches.setBooleanValue(this.key + '_active', Reactive.val(false)) 
+    }
+
+    activate(){
+        this.isActive = true;
+        Patches.setBooleanValue(this.key + '_active', Reactive.val(true)) 
     }
 
     resetTimeDriver(){
@@ -95,14 +108,13 @@ class Lane {
     resetAnimation(){
         const quadraticSampler = Animation.samplers.easeInOutQuad(0.3, -0.5);
         const translationAnimation = Animation.animate(this.timeDriver, quadraticSampler);        
-
         this.animationObj = translationAnimation;
     }
 
     startAnim() {
         this.resetTimeDriver();
         this.resetAnimation();
-        this.isActive = true;
+        this.activate();
 
         this.root.transform.x = this.animationObj;
 
@@ -119,30 +131,77 @@ class Lane {
 
 
 // const fishLane0 = Scene.root.find("fish_lane_0");
-let lane0 = new Lane(fishLane0)
+let lane0 = new Lane(fishLane0, 'lane0')
 lane0.startAnim()
 
 const fishLane1 = Scene.root.find("fish_lane_1");
-let lane1 = new Lane(fishLane1)
+let lane1 = new Lane(fishLane1, 'lane1')
 lane1.startAnim()
 
 const fishLane2 = Scene.root.find("fish_lane_2");
-let lane2 = new Lane(fishLane2)
+let lane2 = new Lane(fishLane2, 'lane2')
 lane2.startAnim()
 
 let mouthOffset = 0.5;
 
 
+FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
+    if(e.newValue > 0.5){
+
+        let currMouthPos = FaceTracking.face(0).mouth.center.y.lastValue;
+        Diagnostics.log(e.newValue);
+        lane0.hit()
+
+    
+        // -- Lane 0 -- //
+        // if(
+        //     currMouthPos < 0 && 
+        //     currMouthPos > -0.075 &&
+        //     lane0.isActive == true            
+        // ){
+        //     lane0.hit()
+        // }
+
+    }
+
+})
 
 
 // FaceTracking.face(0).mouth.center.x.monitor().subscribe(function(e) {
-//     mouthCoord.x = e.newValue
+//     Diagnostics.log(e.newValue);
+//     // mouthCoord.x = e.newValue
 // })
 
-// FaceTracking.face(0).mouth.center.y.monitor().subscribe(function(e) {
-//     mouthCoord.y = canvasBoundsWidth.mul(e.newValue)
+FaceTracking.face(0).mouth.center.y.monitor().subscribe(function(e) {
+    // let mouthScreenCoord = {
+    //     x: 0, y: 0
+    // }
 
-//   FaceTracking.face(0).cameraTransform.position.y.monitor().subscribe(() => {
+    const mouthScaledX = FaceTracking.face(0).mouth.center.x.mul(canvasBoundsWidth);
+    const mouthScaledY = FaceTracking.face(0).mouth.center.y.mul(canvasBoundsHeight);
+
+    trackerRect.transform.x = mouthScaledX.sub(canvasBoundsWidth.div(2));
+    trackerRect.transform.y = mouthScaledY.sub(canvasBoundsWidth.div(2)).mul(-1);
+    
+    trackerRect.transform.x = mouthScaledX;
+    trackerRect.transform.y = mouthScaledY;
+    
+
+    // Convert the normalized screen space value for x and y by multiplying by the
+    // width and height of the canvas
+    // const scaledX = face2DBoundsCenter.x.mul(canvasBoundsWidth);
+    // const scaledY = face2DBoundsCenter.y.mul(canvasBoundsHeight);
+    
+    // const testRect = Scene.root.find("tester");
+    // const trackerRect = Scene.root.find("tracker");
+    
+    // testRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
+    // testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
+
+    // mouthCoord.y = canvasBoundsWidth.mul(e.newValue)
+})
+
+// FaceTracking.face(0).cameraTransform.position.y.monitor().subscribe(() => {
 //     Diagnostics.log(canvasBoundsHeight.mul(e.newValue).lastValue);
 
 //   })
@@ -160,56 +219,8 @@ let mouthOffset = 0.5;
 //     // }
 // })
 
-FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
-    // Diagnostics.log(e.newValue);
-
-    if( e.newValue > 0.5 ){
-    }
-
-})
 
 
-
-// const fishLane2 = Scene.root.find("fish_lane_2");
-
-
-
-
-// let fishLaneAnim = function(fishPosX){
-    
-//     let timeDriver = resetTimeDriver();
-
-//     timeDriver.onAfterIteration().subscribe((e) => {
-//         timeDriver = Animation.timeDriver( randTimeDriver() );
-//         Diagnostics.log(e)
-
-//     })    
-
-//     const quadraticSampler = Animation.samplers.easeInOutQuad(0.3, -0.5);
-//     const translationAnimation = Animation.animate(timeDriver, quadraticSampler);
-
-
-//     fishLane1.transform.x = translationAnimation;
-
-//     timeDriver.start();
-
-
-
-// }();
-
-var fishPosX = 0;
-
-
-
-demoFish.transform.x.monitor().subscribe((e) => {
-    // let fishPosX = e.newValue;
-    fishPosX = e.newValue;
-    
-    let fishPosXNorm = canvasBoundsWidth.mul(e.newValue);
-
-    // Diagnostics.log(fishPosXNorm);    
-
-})
 
 
 
