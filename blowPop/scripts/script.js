@@ -79,9 +79,9 @@ class Score {
         let newScore = parseInt(this.score);
         
         if(hasBonus){
-            newScore += 10;
-        } else {
             newScore += 50;
+        } else {
+            newScore += 10;
         }
 
         this.score = newScore.toString();
@@ -104,19 +104,17 @@ class Lane {
         
         this.isActive = false;
         this.timeDriver = null;
-        this.score = 0;
     }
 
     hit(){
         if(this.isActive){
-            this.score++;
-            this.deactivate();
             this.scoreboard.scored();
+            this.deactivate();
         }
     }
 
     deactivate(){
-        Diagnostics.log('deactivate' + this.key)
+        // Diagnostics.log('deactivate' + this.key)
         this.isActive = false;
         Patches.setBooleanValue(this.key + '_active', Reactive.val(false)) 
     }
@@ -176,7 +174,7 @@ FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
     if(e.newValue > 0.5){
 
         let currMouthPos = FaceTracking.face(0).mouth.center.y.lastValue;
-        Diagnostics.log(e.newValue);
+        // Diagnostics.log(e.newValue);
         lane0.hit()
 
     
