@@ -14,10 +14,8 @@
 // How to load in modules
 const Scene = require('Scene');
 const FaceTracking = require('FaceTracking');
-
+const Patches = require('Patches');
 const FaceTracking2D = require('FaceTracking2D');
-
-
 const Diagnostics = require('Diagnostics');
 const Reactive = require('Reactive');
 const Animation = require('Animation');
@@ -28,8 +26,6 @@ let mouthCoord = {
     y: null
 };
 const mouthOpenness = FaceTracking.face(0).mouth.openness;
-
-
 
 const canvas = Scene.root.find("screenDim");
 const canvasBounds = canvas.bounds;
@@ -51,6 +47,15 @@ const trackerRect = Scene.root.find("tracker");
 
 testRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
 testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
+
+Patches.setPoint2DValue('lanternOffset', 
+    Reactive.point2d(
+        testRect.transform.x,
+        testRect.transform.y
+    )
+);
+
+// Diagnostics.log(Patches.getPoint2DValue('lanternOffset'))
 
 const fishLane0 = Scene.root.find("fish_lane_0");
 
