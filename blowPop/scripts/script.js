@@ -22,7 +22,7 @@ const Animation = require('Animation');
 
 const face = FaceTracking.face(0);
 let mouthCoord = {
-    x: null,
+    x: FaceTracking.face(0).mouth.center.x.monitor({fireOnInitialValue: true}),
     y: null
 };
 const mouthOpenness = FaceTracking.face(0).mouth.openness;
@@ -104,6 +104,11 @@ class Lane {
         
         this.isActive = false;
         this.timeDriver = null;
+
+        this.screenPos = {
+            x: this.root.transform.x.mul(canvasBoundsWidth).sub(canvasBoundsWidth.div(2)),
+            y: this.root.transform.y.mul(canvasBoundsHeight),
+        };
     }
 
     hit(){
@@ -114,7 +119,6 @@ class Lane {
     }
 
     deactivate(){
-        // Diagnostics.log('deactivate' + this.key)
         this.isActive = false;
         Patches.setBooleanValue(this.key + '_active', Reactive.val(false)) 
     }
@@ -138,11 +142,15 @@ class Lane {
         this.resetTimeDriver();
         this.resetAnimation();
         this.activate();
+        // Diagnostics.log('laneScreenPos: ' + this.screenPos.x.lastValue);
 
         this.root.transform.x = this.animationObj;
+        // Diagnostics.log('startScreenPos: ' + this.screenPos.x.lastValue);
 
         this.timeDriver.start();
         this.timeDriver.onCompleted().subscribe(() => {
+            // Diagnostics.log('finScreenPos: ' + this.screenPos.x.lastValue);
+
             this.isActive = false;
             this.startAnim(); 
 
@@ -159,6 +167,9 @@ const fishLane0 = Scene.root.find("fish_lane_0");
 let lane0 = new Lane(fishLane0, 'lane0', gloablScoreboard)
 lane0.startAnim()
 
+const recDem = Scene.root.find("rectangle0");
+recDem.transform.x = lane0.root.transform.x.mul(1350);
+
 const fishLane1 = Scene.root.find("fish_lane_1");
 let lane1 = new Lane(fishLane1, 'lane1', gloablScoreboard)
 lane1.startAnim()
@@ -174,18 +185,20 @@ FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
     if(e.newValue > 0.5){
 
         let currMouthPos = FaceTracking.face(0).mouth.center.y.lastValue;
-        // Diagnostics.log(e.newValue);
-        lane0.hit()
+        // Diagnostics.log('laneScreenPos: ' + lane0.screenPos.x.lastValue);
+        // .root.transform.x.mul(1350)
+        Diagnostics.log(FaceTracking.face(0).mouth.center.x.toString().pinLastValue());
+        // lane0.hit()
 
     
         // -- Lane 0 -- //
-        // if(
-        //     currMouthPos < 0 && 
-        //     currMouthPos > -0.075 &&
-        //     lane0.isActive == true            
-        // ){
-        //     lane0.hit()
-        // }
+        if(
+            currMouthPos > lane0.screenPos.y &&
+            currMouthPos < lane1.screenPos.y &&
+            lane0.isActive == true            
+        ){
+            lane0.hit()
+        }
 
     }
 
@@ -205,12 +218,12 @@ FaceTracking.face(0).mouth.center.y.monitor().subscribe(function(e) {
     const mouthScaledX = FaceTracking.face(0).mouth.center.x.mul(canvasBoundsWidth);
     const mouthScaledY = FaceTracking.face(0).mouth.center.y.mul(canvasBoundsHeight);
 
-    trackerRect.transform.x = mouthScaledX.sub(canvasBoundsWidth.div(2));
-    trackerRect.transform.y = mouthScaledY.sub(canvasBoundsWidth.div(2)).mul(-1);
+    // trackerRect.transform.x = mouthScaledX.sub(canvasBoundsWidth.div(2));
+    // trackerRect.transform.y = mouthScaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
     
-    trackerRect.transform.x = mouthScaledX;
-    trackerRect.transform.y = mouthScaledY;
-    
+    // trackerRect.transform.x = mouthScaledX;
+    // trackerRect.transform.y = mouthScaledY;
+
     
 })
 
