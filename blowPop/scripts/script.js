@@ -30,8 +30,6 @@ const canvasBounds = canvas.bounds;
 const canvasBoundsWidth = canvasBounds.width;
 const canvasBoundsHeight = canvasBounds.height;
 
-
-
 const face2D = FaceTracking2D.face(0);
 const face2DBounds = face2D.boundingBox;
 const face2DBoundsCenter = face2DBounds.center;
@@ -53,13 +51,24 @@ Patches.setPoint2DValue('lanternOffset',
 );
 
 const mouthRect = Scene.root.find("mouthTracker");
-Diagnostics.watch('face2DCenter', face2DBoundsCenter.x);
 
+
+const mouth = FaceTracking.face(0).mouth.center;
+
+var mouthX = FaceTracking.face(0).cameraTransform.applyTo(mouth).x;
+var mouthY = FaceTracking.face(0).cameraTransform.applyTo(mouth).y;
+
+mouthRect.transform.x = mouthX.mul(1000);
+mouthRect.transform.y = mouthY.mul(1000);
+
+Diagnostics.watch('mouthTrackPosX', mouthRect.transform.x);
+
+// Diagnostics.watch('noseCenterX', FaceTracking.face(0).cameraTransform.applyTo(nose).x);
 
 var mouthOffset = -50;
 
-mouthRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
-mouthRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1).add(mouthOffset);
+// mouthRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
+// mouthRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
 
 
 let resetTimeDriver = () => {
