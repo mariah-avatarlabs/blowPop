@@ -43,13 +43,6 @@ const testRect = Scene.root.find("tester");
 testRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
 testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
 
-Patches.setPoint2DValue('lanternOffset', 
-    Reactive.point2d(
-        scaledX.sub(canvasBoundsWidth.div(2)),
-        scaledY.sub(canvasBoundsHeight.div(2))
-    )
-);
-
 const mouthRect = Scene.root.find("mouthTracker");
 
 
@@ -61,6 +54,13 @@ var mouthY = FaceTracking.face(0).cameraTransform.applyTo(mouth).y;
 mouthRect.transform.x = mouthX.mul(1000);
 mouthRect.transform.y = mouthY.mul(1000);
 
+Patches.setPoint2DValue(
+    'lanternOffset', 
+    Reactive.point2d(
+        mouthRect.transform.x,
+        mouthY.mul(-500)
+    )
+);
 
 // Diagnostics.watch('noseCenterX', FaceTracking.face(0).cameraTransform.applyTo(nose).x);
 
@@ -82,6 +82,7 @@ let resetTimeDriver = () => {
 
 };
 
+// -- SCOREBOARD CLASS -- // 
 class Score {
     constructor(){
         this.score = '00';
@@ -106,6 +107,7 @@ class Score {
 
 }
 
+// -- LANE CLASS -- // 
 class Lane {
     constructor(sceneObj, key, scoreboard) {
         this.key = key;
@@ -202,14 +204,14 @@ class Lane {
   }
 
 
-  // -- SCOREBOARD OBJ -- // 
 
+
+// -- SCOREBOARD OBJ -- // 
 let gloablScoreboard = new Score();
 
 
 
 // -- FISH LANES -- // 
-
 const fishLane0 = Scene.root.find("fish_lane_0");
 let lane0 = new Lane(fishLane0, 'lane0', gloablScoreboard)
 lane0.startAnim()
@@ -225,7 +227,6 @@ lane2.startAnim()
 
 
 // -- COLLISION DETECTION -- //
-
 FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
     if(e.newValue > 0.5){
 
