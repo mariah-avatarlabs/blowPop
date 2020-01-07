@@ -256,23 +256,42 @@ FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
         let currLane2PosY = lane2.trackerObj.transform.y.pinLastValue();
         let modellOffset = -10;
 
+        // refactor - not tracking mouth correctly
+
         if(currMouthPosY < 0 && currMouthPosY >= (currLane0PosY + modellOffset) ){
             let currLane0PosX = lane0.trackerObj.transform.x.pinLastValue();
 
-            Diagnostics.log('HIT LANE 1')
+            if( (currLane0PosX - 50) < currMouthPosX && 
+                currMouthPosX < (currLane0PosX + 50)
+            ) {
+                Diagnostics.log('HIT');
+                lane0.hit();
+            }
 
         } 
 
         if(currMouthPosY < (currLane0PosY + modellOffset) && currMouthPosY >= (currLane1PosY + modellOffset) ){
             let currLane1PosX = lane1.trackerObj.transform.x.pinLastValue();
 
-            Diagnostics.log('LANE 2 X: ' + currLane1PosX)
-            Diagnostics.log('MOUTH X: ' + currMouthPosX)
+            if( (currLane1PosX - 50) < currMouthPosX && 
+                currMouthPosX < (currLane1PosX + 50)
+            ) {
+                Diagnostics.log('HIT');
+                lane1.hit();
+            }
+
 
         } 
 
         if(currMouthPosY < (currLane1PosY + modellOffset) && currMouthPosY >= (currLane2PosY + modellOffset)){
             let currLane2PosX = lane2.trackerObj.transform.x.pinLastValue();
+
+            if( (currLane2PosX - 50) < currMouthPosX && 
+                currMouthPosX < (currLane2PosX + 50)
+            ) {
+                Diagnostics.log('HIT');
+                lane2.hit();
+            }
 
             Diagnostics.log('HIT LANE 3')
 
