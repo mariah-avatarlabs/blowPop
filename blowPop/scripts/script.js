@@ -19,6 +19,7 @@ const FaceTracking2D = require('FaceTracking2D');
 const Diagnostics = require('Diagnostics');
 const Reactive = require('Reactive');
 const Animation = require('Animation');
+const Time = require('Time');
 
 
 const camera = Scene.root.find("Camera");
@@ -64,7 +65,7 @@ Patches.setPoint2DValue(
 
 // Diagnostics.watch('noseCenterX', FaceTracking.face(0).cameraTransform.applyTo(nose).x);
 
-var mouthOffset = -50;
+var mouthOffset = -70;
 
 // mouthRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
 // mouthRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
@@ -81,6 +82,47 @@ let resetTimeDriver = () => {
     return timeDriver;
 
 };
+
+// -- TIMER CLASS -- // 
+class Timer {
+    constructor(gameTimeLengthSec = 20){
+        this.root = Scene.root.find("Timer");
+        this.gameLength = gameTimeLengthSec;
+        this.currentTime = this.gameLength;
+
+        this.intervalTimer = null;
+    }
+
+    formatScore(time){
+        let timeString = time.toString();
+        timeString = timeString.length < 2 ? '0' + timeString : timeString
+
+        return timeString;
+    }
+
+    updateScoreBoard(){        
+        if(this.currentTime > 0){
+            this.currentTime--;
+
+            Patches.setStringValue(
+                'timerText', 
+                this.formatScore(this.currentTime)
+            );
+        } else {
+            // game over
+        }
+    }
+
+    start(){  
+        Diagnostics.log('start timer: ' + this.gameLength)
+
+        this.intervalTimer = Time.setInterval(() => {
+            this.updateScoreBoard()
+        }, 1000);
+    }    
+
+}
+
 
 // -- SCOREBOARD CLASS -- // 
 class Score {
@@ -216,6 +258,10 @@ class Lane {
 let gloablScoreboard = new Score();
 
 
+// -- TIMER OBJ -- //
+let globalTimer = new Timer();
+globalTimer.start()
+
 
 // -- FISH LANES -- // 
 const fishLane0 = Scene.root.find("fish_lane_0");
@@ -248,7 +294,7 @@ FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
         let currLane2PosY = lane2.trackerObj.transform.y.pinLastValue();
         let currLane2PosX = lane1.trackerObj.transform.x.pinLastValue();
 
-        let modellOffset = 50;
+        let modellOffset = 70;
 
 
         // refactor - not tracking mouth correctly
