@@ -72,7 +72,7 @@ var mouthOffset = -50;
 
 
 let resetTimeDriver = () => {
-    let driverDuration = Math.floor(Math.random() * 40) + 20;
+    let driverDuration = Math.floor(Math.random() * 40) + 30;
     let timeDriver = Animation.timeDriver({
         durationMilliseconds: driverDuration * 100,
         loopCount: 1,
