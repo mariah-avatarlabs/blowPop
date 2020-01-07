@@ -61,7 +61,6 @@ var mouthY = FaceTracking.face(0).cameraTransform.applyTo(mouth).y;
 mouthRect.transform.x = mouthX.mul(1000);
 mouthRect.transform.y = mouthY.mul(1000);
 
-Diagnostics.watch('mouthTrackPosX', mouthRect.transform.x);
 
 // Diagnostics.watch('noseCenterX', FaceTracking.face(0).cameraTransform.applyTo(nose).x);
 
@@ -203,108 +202,91 @@ class Lane {
   }
 
 
+  // -- SCOREBOARD OBJ -- // 
+
 let gloablScoreboard = new Score();
 
-// const fishLane0 = Scene.root.find("fish_lane_0");
+
+
+// -- FISH LANES -- // 
+
 const fishLane0 = Scene.root.find("fish_lane_0");
 let lane0 = new Lane(fishLane0, 'lane0', gloablScoreboard)
 lane0.startAnim()
 
-
-
-
-function boxToScreenPos(laneObj){
-    var scale1 = canvasBoundsWidth.mul(laneObj.fish.transform.x);
-    return scale1.div(5);
-}
-
-
-// Diagnostics.watch('startScreenlane0: ', lane0.fish.transform.x.mul(canvasBoundsWidth.div(2)));
-
-
-// const testRect = Scene.root.find("tester");
-// const trackerRect = Scene.root.find("tracker");
-
-// testRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
-// testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
-
-// const scaledX = face2DBoundsCenter.x.mul(canvasBoundsWidth);
-// const scaledY = face2DBoundsCenter.y.mul(canvasBoundsHeight);
-
-// const testRect = Scene.root.find("tester");
-// const trackerRect = Scene.root.find("tracker");
-
-// testRect.transform.x = scaledX.sub(canvasBoundsWidth.div(2));
-// testRect.transform.y = scaledY.sub(canvasBoundsHeight.div(2)).mul(-1);
-
-// Diagnostics.watch('startScreenlane0: ', canvasBoundsWidth.div(2).mul(lane0.fish.transform.x.div));
-// Diagnostics.watch('startScreenlane0: ', canvasBoundsWidth.div(2).mul(lane0.fish.transform.x).sub(canvasBoundsWidth));
-
-
 const fishLane1 = Scene.root.find("fish_lane_1");
 let lane1 = new Lane(fishLane1, 'lane1', gloablScoreboard)
 lane1.startAnim()
-
 
 const fishLane2 = Scene.root.find("fish_lane_2");
 let lane2 = new Lane(fishLane2, 'lane2', gloablScoreboard)
 lane2.startAnim()
 
 
-// Collision Detection
+
+// -- COLLISION DETECTION -- //
+
 FaceTracking.face(0).mouth.openness.monitor().subscribe((e) => {
     if(e.newValue > 0.5){
-        // Diagnostics.log('tracker pos: ' + mouthRect.transform.y.pinLastValue());
-        // Diagnostics.log('box2 pos: ' + lane1.trackerObj.transform.y.pinLastValue());
 
         let currMouthPosY = mouthRect.transform.y.pinLastValue();
         let currMouthPosX = mouthRect.transform.x.pinLastValue();
 
         let currLane0PosY = lane0.trackerObj.transform.y.pinLastValue();
+        let currLane0PosX = lane0.trackerObj.transform.x.pinLastValue();
+
         let currLane1PosY = lane1.trackerObj.transform.y.pinLastValue();
+        let currLane1PosX = lane1.trackerObj.transform.x.pinLastValue();
+
         let currLane2PosY = lane2.trackerObj.transform.y.pinLastValue();
-        let modellOffset = -10;
+        let currLane2PosX = lane1.trackerObj.transform.x.pinLastValue();
+
+        let modellOffset = 50;
+
 
         // refactor - not tracking mouth correctly
+        if(currMouthPosY < 50 && currMouthPosY > currLane0PosY){
 
-        if(currMouthPosY < 0 && currMouthPosY >= (currLane0PosY + modellOffset) ){
-            let currLane0PosX = lane0.trackerObj.transform.x.pinLastValue();
-
-            if( (currLane0PosX - 50) < currMouthPosX && 
-                currMouthPosX < (currLane0PosX + 50)
+            if(
+                currMouthPosX > currLane0PosX - modellOffset &&
+                currMouthPosX < currLane0PosX + modellOffset
             ) {
-                Diagnostics.log('HIT');
+                Diagnostics.log('HIT INT');
                 lane0.hit();
             }
 
         } 
 
-        if(currMouthPosY < (currLane0PosY + modellOffset) && currMouthPosY >= (currLane1PosY + modellOffset) ){
-            let currLane1PosX = lane1.trackerObj.transform.x.pinLastValue();
 
-            if( (currLane1PosX - 50) < currMouthPosX && 
-                currMouthPosX < (currLane1PosX + 50)
+        if(
+            currMouthPosY < (currLane1PosY - mouthOffset) && 
+            currMouthPosY > (currLane1PosY + mouthOffset)
+        ){
+            if(
+                currMouthPosX > currLane1PosX - modellOffset &&
+                currMouthPosX < currLane1PosX + modellOffset
             ) {
-                Diagnostics.log('HIT');
+                Diagnostics.log('HIT INT 1');
                 lane1.hit();
             }
 
-
         } 
 
-        if(currMouthPosY < (currLane1PosY + modellOffset) && currMouthPosY >= (currLane2PosY + modellOffset)){
-            let currLane2PosX = lane2.trackerObj.transform.x.pinLastValue();
 
-            if( (currLane2PosX - 50) < currMouthPosX && 
-                currMouthPosX < (currLane2PosX + 50)
+        if(
+            currMouthPosY < (currLane2PosY - mouthOffset) && 
+            currMouthPosY > (currLane2PosY + mouthOffset)
+        ){
+            if(
+                currMouthPosX > currLane2PosX - modellOffset &&
+                currMouthPosX < currLane2PosX + modellOffset
             ) {
-                Diagnostics.log('HIT');
+                Diagnostics.log('HIT INT 2');
                 lane2.hit();
             }
 
-            Diagnostics.log('HIT LANE 3')
-
         } 
+
 
 
     }
