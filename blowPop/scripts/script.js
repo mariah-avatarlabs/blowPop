@@ -91,6 +91,15 @@ class Timer {
         this.currentTime = this.gameLength;
 
         this.intervalTimer = null;
+        this.init();
+
+    }
+
+    init(){
+        Patches.setStringValue(
+            'timerText', 
+            this.formatScore(this.gameLength)
+        );        
     }
 
     formatScore(time){
