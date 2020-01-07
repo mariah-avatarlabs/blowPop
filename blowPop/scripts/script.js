@@ -86,6 +86,12 @@ let resetTimeDriver = () => {
 class Score {
     constructor(){
         this.score = '00';
+
+        this.init();
+    }
+    
+    init(){
+        this.updateScoreBoard();
     }
 
     scored(hasBonus = false) {
