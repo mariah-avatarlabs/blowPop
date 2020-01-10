@@ -49,11 +49,24 @@ const mouthRect = Scene.root.find("mouthTracker");
 
 const mouth = FaceTracking.face(0).mouth.center;
 
-var mouthX = FaceTracking.face(0).cameraTransform.applyTo(mouth).x;
-var mouthY = FaceTracking.face(0).cameraTransform.applyTo(mouth).y;
 
-mouthRect.transform.x = mouthX.mul(1000);
-mouthRect.transform.y = mouthY.mul(1000);
+// -- CONVERT X POS TO CANVAS -- //
+var mouthX = FaceTracking.face(0).cameraTransform.applyTo(mouth).x;
+var focalWidth= camera.focalPlane.width;
+var intNrmlWidth = canvasBoundsWidth.div(focalWidth);
+mouthRect.transform.x = mouthX.mul(intNrmlWidth);
+
+
+
+// -- CONVERT MOUTH Y POS TO CANVAS -- //
+var mouthY = FaceTracking.face(0).cameraTransform.applyTo(mouth).y;
+var focalHeight = camera.focalPlane.height;
+var intNrmlHeight = canvasBoundsHeight.div(focalHeight);
+mouthRect.transform.y = mouthY.mul(intNrmlHeight);
+
+
+
+// mouthRect.transform.y = mouthY.mul(1000);
 
 Patches.setPoint2DValue(
     'lanternOffset', 
